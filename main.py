@@ -46,7 +46,9 @@ class ServicoLivros:
 
     def remover(self, livro_id: int) -> bool:
         return self._repo.remover(livro_id)
-
+    
+    def buscar_por_titulo(self, titulo: str) -> list[Livro]:
+        return self._repo.buscar_por_titulo(titulo)
 
 # ----------------------------------------------------------------------
 # Montagem da aplicacao
@@ -66,6 +68,11 @@ servico = ServicoLivros(RepositorioEmMemoria())
 @app.get("/livros", response_model=list[Livro])
 def listar_livros():
     return servico.listar()
+
+
+@app.get("/livros/busca", response_model=list[Livro])
+def buscar_livros_por_titulo(titulo: str):
+    return servico.buscar_por_titulo(titulo)
 
 
 @app.get("/livros/{livro_id}", response_model=Livro)
