@@ -156,3 +156,29 @@ def test_fluxo_completo_criar_buscar_atualizar_remover():
     # remove
     client.delete(f"/livros/{livro_id}")
     assert client.get(f"/livros/{livro_id}").status_code == 404
+
+
+# ----------------------------------------------------------------------
+# Busca por título
+# ----------------------------------------------------------------------
+
+def test_buscar_por_titulo_retorna_livros_encontrados():
+    _criar_livro_exemplo(titulo="O Cortiço")
+    resp = client.get("/livros/busca", params={"titulo": "Cortiço"})
+    assert resp.status_code == 200
+    titulos = [livro["titulo"] for livro in resp.json()]
+    assert any("Cortiço" in t for t in titulos)
+
+
+def test_buscar_por_titulo_case_insensitive():
+    _criar_livro_exemplo(titulo="Iracema")
+    resp = client.get("/livros/busca", params={"titulo": "iracema"})
+    assert resp.status_code == 200
+    titulos = [livro["titulo"] for livro in resp.json()]
+    assert any("Iracema" in t for t in titulos)
+
+
+def test_buscar_por_titulo_sem_resultado_retorna_lista_vazia():
+    resp = client.get("/livros/busca", params={"titulo": "xyzabc123"})
+    assert resp.status_code == 200
+    assert resp.json() == []

@@ -38,6 +38,9 @@ class RepositorioLivros(ABC):
     def remover(self, livro_id: int) -> bool:
         ...
 
+    @abstractmethod
+    def buscar_por_titulo(self, titulo: str) -> list[Livro]:
+        ...
 
 class RepositorioEmMemoria(RepositorioLivros):
     """
@@ -88,3 +91,10 @@ class RepositorioEmMemoria(RepositorioLivros):
             return False
         del self._livros[livro_id]
         return True
+    
+    def buscar_por_titulo(self, titulo: str) -> list[Livro]:
+        titulo_lower = titulo.lower()
+        return [
+            livro for livro in self._livros.values()
+            if titulo_lower in livro.titulo.lower()
+        ]
